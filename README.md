@@ -22,7 +22,7 @@ This repo includes:
 
 ## Monorepo Structure
 ```
-Root/Backend/              # Node/Express API
+Root/Backend/         # Node/Express API
 Model/                # Python/Flask model service + notebooks
 public/               # Static assets
 src/                  # React app pages & styles
