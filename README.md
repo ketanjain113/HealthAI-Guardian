@@ -40,15 +40,15 @@ package.json          # Frontend package manifest
 ### 2) Install dependencies
 - Frontend (root):
 ```powershell
-cd "c:\Users\Ketan\Downloads\ZeroDivision"; npm install
+npm install
 ```
 - Backend:
 ```powershell
-cd "c:\Users\Ketan\Downloads\ZeroDivision\Root\Backend"; npm install
+cd ".\Root\Backend"; npm install
 ```
 - Model API:
 ```powershell
-cd "c:\Users\Ketan\Downloads\ZeroDivision\Model"; python -m venv .venv; .\.venv\Scripts\activate; pip install -r requirements.txt
+cd ".\Model"; python -m venv .venv; .\.venv\Scripts\activate; pip install -r requirements.txt
 ```
 
 ### 3) Environment variables
@@ -68,15 +68,15 @@ REACT_APP_API_BASE=http://localhost:8080
 ### 4) Run services (local)
 - Model API (Flask):
 ```powershell
-cd ".\ZeroDivision\Model"; .\.venv\Scripts\activate; python ModelAPI.py
+cd ".\Model"; .\.venv\Scripts\activate; python ModelAPI.py
 ```
 - Backend (Express):
 ```powershell
-cd ".\ZeroDivision\Backend"; npm run dev
+cd ".\Backend"; npm run dev
 ```
 - Frontend (React):
 ```powershell
-cd ".\ZeroDivision"; npm start
+npm start
 ```
 
 Open the app at `http://localhost:3000`.
