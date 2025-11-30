@@ -22,7 +22,7 @@ This repo includes:
 
 ## Monorepo Structure
 ```
-Backend/              # Node/Express API
+Root/Backend/              # Node/Express API
 Model/                # Python/Flask model service + notebooks
 public/               # Static assets
 src/                  # React app pages & styles
@@ -44,7 +44,7 @@ cd "c:\Users\Ketan\Downloads\ZeroDivision"; npm install
 ```
 - Backend:
 ```powershell
-cd "c:\Users\Ketan\Downloads\ZeroDivision\Backend"; npm install
+cd "c:\Users\Ketan\Downloads\ZeroDivision\Root\Backend"; npm install
 ```
 - Model API:
 ```powershell
