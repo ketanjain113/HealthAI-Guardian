@@ -126,7 +126,6 @@ Open the app at `http://localhost:3000`.
  - [Harsh Malviya](https://github.com/harshfly)
 
 ## Acknowledgements
-- Team Void‑Hacks 7.0
 - Open‑source libraries and frameworks powering the stack
 
 
