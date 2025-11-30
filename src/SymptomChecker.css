@@ -1,0 +1,301 @@
+.sc-page {
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #e8fbff, #eafaff);
+  font-family: 'Inter', sans-serif;
+}
+
+/* HEADER */
+.sc-header {
+  width: 100%;
+  padding: 18px 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.sc-header .logo {
+  font-size: 22px;
+  font-weight: 700;
+  color: #00c9d6;
+  text-decoration: none;
+}
+
+.sc-header nav a {
+  margin: 0 14px;
+  text-decoration: none;
+  color: #333;
+  font-size: 15px;
+}
+
+.sc-header nav a.active,
+.sc-header nav a:hover {
+  color: #00c9d6;
+  font-weight: 600;
+}
+
+.logout-btn {
+  background: #00c9d6;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* LAYOUT */
+.sc-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 50px 80px;
+}
+
+.sc-left {
+  width: 50%;
+}
+
+.sc-left h1 {
+  font-size: 42px;
+  font-weight: 800;
+}
+
+.sc-left p {
+  margin-top: 10px;
+  font-size: 18px;
+  color: #555;
+}
+
+/* CHAT BOX */
+.chat-box {
+  margin-top: 30px;
+  width: 100%;
+  height: 380px;
+  padding: 20px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.45);
+  backdrop-filter: blur(12px);
+  overflow-y: auto;
+  box-shadow: 0 4px 25px rgba(0,0,0,0.1);
+}
+
+.chat-message {
+  padding: 14px 18px;
+  margin-bottom: 12px;
+  border-radius: 16px;
+  max-width: 80%;
+  font-size: 15px;
+}
+
+.chat-message.bot {
+  background: white;
+  border-left: 4px solid #00c9d6;
+  color: #333;
+}
+
+.chat-message.user {
+  background: #00c9d6;
+  color: white;
+  margin-left: auto;
+}
+
+/* INPUT */
+.chat-input {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 14px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  font-size: 15px;
+}
+
+.chat-input button {
+  background: #00c9d6;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.chat-input button:hover {
+  background: #00b4c0;
+}
+
+/* RIGHT SIDE IMAGE */
+.sc-right img {
+  width: 350px;
+  filter: drop-shadow(0 8px 25px rgba(0,0,0,0.2));
+}
+
+/* Symptom Checker layout (kept minimal and theme-matching) */
+.symptom-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e8fbff 0%, #f0f9ff 60%);
+  padding: 40px 20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.symptom-title { font-size:40px; font-weight:800; color:#032728; margin-bottom:8px; }
+.symptom-subtitle { color:#456a6b; margin-bottom:28px; max-width:640px; text-align:center; }
+.symptom-main-container { display:grid; grid-template-columns: 380px 1fr; gap:36px; width:100%; max-width:1200px; align-items:start; }
+.chatbot-section { display:flex; flex-direction:column; align-items:center; gap:18px; }
+.feature-badges { display:flex; gap:10px; }
+.badge { padding:8px 12px; border-radius:20px; background: rgba(0,207,232,0.06); color:#007a8a; font-weight:700; border:1px solid rgba(0,207,232,0.08); }
+.chatbox-section { display:flex; flex-direction:column; }
+.symptom-chat-container { background: white; border-radius:18px; box-shadow: 0 20px 60px rgba(0,207,232,0.08); width:100%; height:600px; display:flex; flex-direction:column; overflow:hidden; }
+.symptom-messages { flex:1; padding:28px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; background: linear-gradient(180deg,#fff,#f6feff); }
+.symptom-message { display:flex; max-width:80%; }
+.bot-msg { justify-content:flex-start; align-self:flex-start; padding:12px 16px; background: linear-gradient(135deg,#e8fbff,#e6f8fb); color:#0b3b3c; border-radius:14px; border-left:3px solid #00cfe8; }
+.user-msg { justify-content:flex-end; align-self:flex-end; padding:12px 16px; background: linear-gradient(135deg,#00cfe8,#0099cc); color:white; border-radius:14px; }
+.symptom-input-row { display:flex; gap:12px; padding:18px; border-top:1px solid #e6f6f7; align-items:center; }
+.upload-area { display:flex; align-items:center; gap:8px; }
+.upload-btn { background:linear-gradient(90deg,#00cfe8,#0099cc); color:white; padding:8px 12px; border-radius:10px; cursor:pointer; }
+.upload-preview { display:flex; align-items:center; gap:8px; background: rgba(0,207,232,0.03); padding:6px; border-radius:10px; }
+.upload-preview img { width:56px; height:56px; object-fit:cover; border-radius:8px; }
+.msg-image { max-width:320px; border-radius:12px; box-shadow: 0 10px 30px rgba(0,207,232,0.06); }
+.symptom-input { flex:1; padding:12px 14px; border-radius:12px; border:1px solid #e6f6f7; }
+.symptom-send-btn { background:linear-gradient(90deg,#00cfe8,#0099cc); color:white; padding:12px 18px; border-radius:12px; cursor:pointer; }
+
+
+/* -------------------- Enhanced 3D Robot Avatar Styles (replacing sphere) -------------------- */
+.phone-frame {
+  width: 340px;
+  height: 460px;
+  border-radius: 22px;
+  background: linear-gradient(180deg,#07121a 0%, #0a2328 100%);
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0,207,232,0.06);
+  box-shadow: 0 8px 24px rgba(2,16,23,0.25);
+  transform-style: preserve-3d;
+  will-change: transform;
+  --rx: 0deg; --ry: 0deg;
+  transform: perspective(1200px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 240ms cubic-bezier(.2,.9,.3,1), box-shadow 240ms ease;
+}
+
+.phone-frame:hover {
+  transform: perspective(1200px) rotateX(calc(var(--rx) * 1.02)) rotateY(calc(var(--ry) * 1.02)) translateY(-6px) scale(1.015);
+  box-shadow: 0 18px 48px rgba(2,16,23,0.32);
+}
+
+.avatar-3d { width: 300px; height: 380px; display:flex; align-items:center; justify-content:center; transform-style:preserve-3d; }
+
+/* New robot avatar container */
+.avatar-3d-robot {
+  width: 280px;
+  height: 320px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transform-style: preserve-3d;
+}
+
+.robot-3d-wrapper {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  display: grid;
+  place-items: center;
+  perspective: 900px;
+  transform-style: preserve-3d;
+}
+
+.robot-avatar-img {
+  width: 240px;
+  height: 240px;
+  object-fit: contain;
+  transform-style: preserve-3d;
+  transform: translateZ(20px) rotateX(0deg) rotateY(0deg);
+  transition: transform 520ms cubic-bezier(.2,.9,.3,1), filter 520ms;
+  filter: drop-shadow(0 22px 36px rgba(0,0,0,0.24)) drop-shadow(0 8px 16px rgba(0,207,232,0.45));
+  animation: robotFloat 4s ease-in-out infinite;
+  backface-visibility: visible;
+}
+
+.robot-avatar-glow {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 45% 40%, rgba(0,207,232,0.55), rgba(0,207,232,0.28) 50%, transparent 75%);
+  filter: blur(32px);
+  z-index: -1;
+  animation: glowPulse 3.2s ease-in-out infinite;
+}
+
+.phone-frame:hover .robot-avatar-img {
+  transform: translateZ(32px) rotateX(8deg) rotateY(-6deg) scale(1.06);
+  filter: drop-shadow(0 32px 52px rgba(0,0,0,0.32)) drop-shadow(0 12px 24px rgba(0,207,232,0.55));
+}
+
+@keyframes robotFloat {
+  0% { transform: translateZ(20px) translateY(0) rotateX(0deg) rotateY(0deg); }
+  50% { transform: translateZ(28px) translateY(-10px) rotateX(3deg) rotateY(-3deg); }
+  100% { transform: translateZ(20px) translateY(0) rotateX(0deg) rotateY(0deg); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.08); }
+}
+.avatar-sphere .rings::after  { width:300px; height:300px; margin-left:-150px; margin-top:-150px; border:1px solid rgba(0,207,232,0.05); filter: none; animation: ringSpin 32s linear reverse infinite; }
+@keyframes ringSpin { to { transform: rotate(360deg); } }
+
+.sphere-shell { width:200px; height:200px; border-radius:50%; background: radial-gradient(circle at 28% 24%, #bff8fb 0%, #49e0ef 20%, #00cfe8 50%, #007a8a 100%); box-shadow: 0 18px 40px rgba(2,16,23,0.18); position:relative; transform: translateZ(40px); overflow:visible; }
+.sphere-core { width:150px; height:150px; border-radius:50%; margin:auto; transform: translateZ(28px); position:relative; display:flex; align-items:center; justify-content:center; }
+.sphere-core .face { position: absolute; width: 100%; height: 100%; display:flex; align-items:center; justify-content:center; gap:20px; }
+.sphere-core .eye { width:20px; height:20px; border-radius:50%; background: linear-gradient(180deg,#00f0ff,#0099cc); box-shadow: 0 6px 12px rgba(0,207,232,0.14); transition: transform 200ms ease, box-shadow 200ms ease; }
+.sphere-core .mouth { position:absolute; bottom:18px; width:48px; height:10px; border-radius:8px; background: linear-gradient(180deg,#00a8d4,#007a8a); transition: transform 200ms ease; }
+.specular { position:absolute; width:200px; height:200px; border-radius:50%; background: radial-gradient(circle at 26% 20%, rgba(255,255,255,0.55), rgba(255,255,255,0.02) 32%); mix-blend-mode:screen; pointer-events:none; transform: translateZ(45px); }
+
+.stethoscope-svg { position:absolute; width:300px; height:auto; left:50%; transform:translateX(-50%); bottom:-6px; pointer-events:none; z-index:2; }
+
+.avatar-base { position:absolute; bottom:-18px; width:140px; height:14px; border-radius:10px; background: linear-gradient(180deg,#00cfe8,#0099cc); opacity:0.85; transform: translateZ(0px); box-shadow: 0 6px 14px rgba(0,207,232,0.12); }
+
+.robot-image-frame { position: absolute; bottom: 56px; right: 22px; width: 150px; height: 104px; border-radius: 12px; background: linear-gradient(180deg, #ffffff, #f2feff); border: 1px solid rgba(0,207,232,0.08); box-shadow: 0 6px 18px rgba(0,120,140,0.08); display:flex; align-items:center; justify-content:center; padding:8px; z-index:6; transform: translateZ(48px) translateY(4px); animation: popIn 320ms cubic-bezier(.2,.9,.3,1); }
+.robot-image-frame img { width:100%; height:100%; object-fit:cover; border-radius:8px; box-shadow:0 10px 30px rgba(0,207,232,0.07); }
+@keyframes popIn { from { transform: translateZ(26px) translateY(22px) scale(0.96); opacity:0; } to { transform: translateZ(48px) translateY(4px) scale(1); opacity:1; } }
+
+/* continuous self-rotate for the sphere for 3D effect */
+.avatar-sphere.doctor-robot { animation: slowRotate 20s linear infinite; }
+@keyframes slowRotate { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
+
+/* arms and antenna */
+.arm { position:absolute; width:48px; height:8px; background: linear-gradient(90deg,#00e6f0,#0098b0); border-radius:8px; top:86px; transform-origin:left center; box-shadow:0 10px 26px rgba(0,207,232,0.12); opacity:0.98; transform: translateZ(40px) rotateZ(-12deg); }
+.arm.left { left:-10px; transform-origin:right center; transform: translateZ(40px) rotateZ(-40deg) translateX(-10px); }
+.arm.right { right:-10px; transform-origin:left center; transform: translateZ(40px) rotateZ(40deg) translateX(10px); }
+.arm::after { content:""; position:absolute; right:-8px; top:-6px; width:16px; height:16px; border-radius:50%; background:#00cfe8; box-shadow:0 10px 22px rgba(0,207,232,0.22); }
+.antenna-top { position:absolute; width:12px; height:40px; top:-18px; left:50%; margin-left:-6px; background:linear-gradient(180deg,#00e6f0,#0099b0); border-radius:6px; transform:translateZ(50px); }
+.antenna-top::after { content:""; position:absolute; top:-12px; left:50%; margin-left:-8px; width:16px; height:16px; border-radius:50%; background: radial-gradient(circle,#7ff0ff,#00a8d4); box-shadow: 0 12px 28px rgba(0,207,232,0.38); }
+
+.phone-frame:hover .sphere-core .eye { transform: translateZ(18px) scale(1.06); box-shadow: 0 16px 36px rgba(0,207,232,0.32); }
+.phone-frame:hover .sphere-core .mouth { transform: translateZ(18px) translateY(2px); }
+
+.doctor-badge { position:absolute; bottom:-56px; left:50%; transform:translateX(-50%); background: linear-gradient(180deg,#ffffff,#e9ffff); padding:8px 16px; border-radius:999px; color:#00656b; font-weight:800; box-shadow: 0 18px 40px rgba(0,207,232,0.08); border:1px solid rgba(0,207,232,0.12); z-index:7; }
+
+/* small hover glow to emphasize the avatar */
+.phone-frame:hover .avatar-sphere .rings::before { border-color: rgba(0,207,232,0.12); filter: blur(10px); }
+.phone-frame:hover .avatar-sphere .rings::after { border-color: rgba(0,207,232,0.08); filter: blur(12px); }
+
+/* responsive adjustments */
+@media (max-width: 768px) {
+  .phone-frame { width: 260px; height: 360px; }
+  .robot-image-frame { right: 12px; bottom: 46px; width: 120px; height: 84px; }
+}
+
+/* -------------------------------------------------------------------------------- */

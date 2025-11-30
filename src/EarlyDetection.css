@@ -1,0 +1,151 @@
+/* Early Detection styles */
+
+.ed-page{ padding:28px; min-height:100vh; background: linear-gradient(135deg,#e8fbff 0%, #f6fdff 60%); }
+.card{ background: var(--card-bg); border-radius:12px; padding:14px; border:1px solid rgba(0,207,232,0.06); box-shadow:0 6px 18px rgba(2,16,23,0.04); }
+
+.ed-hero{ display:flex; gap:20px; padding:26px; align-items:center; justify-content:space-between; }
+.hero-left{ max-width:560px; }
+.hero-left h1{ font-size:32px; margin:0; color:#032a2a; }
+.hero-right{ text-align:center; }
+.shield-3d{ font-size:64px; filter:drop-shadow(0 10px 30px rgba(0,207,232,0.06)); }
+.floating-icons{ margin-top:8px; color:var(--muted); }
+.hero-actions{ margin-top:12px; display:flex; gap:12px; }
+.hero-actions .primary{ background: var(--primary-color, #00cfe8); color: #fff; border: none; padding: 14px 28px; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.hero-actions .primary:hover{ transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,207,232,0.3); }
+.hero-actions .ghost{ background: #fff; color: var(--primary-color, #00cfe8); border: 1px solid var(--primary-color, #00cfe8); padding: 14px 28px; border-radius: 10px; font-size: 16px; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+.hero-actions .ghost:hover{ background: rgba(0,207,232,0.05); }
+
+/* modern / 3D placeholders */
+.modern-3d{ position:relative; width:160px; height:160px; display:inline-flex; align-items:center; justify-content:center; border-radius:18px; background:linear-gradient(180deg, #eaffff, #e1fbff); box-shadow: 0 12px 40px rgba(2,16,23,0.06); overflow:hidden; }
+.shield-core{ font-size:40px; transform:translateZ(0); }
+.scan-beam{ position:absolute; bottom:0; left:50%; width:12px; height:120px; background:linear-gradient(180deg, rgba(0,207,232,0.35), rgba(0,207,232,0.05)); transform:translateX(-50%); filter: blur(6px); animation:beam 2.6s linear infinite; }
+@keyframes beam{ 0%{opacity:0.2} 50%{opacity:0.9} 100%{opacity:0.2} }
+.floating-icons .float-icon{ display:inline-block; margin:0 6px; transform-origin:center; animation:float 4s ease-in-out infinite; }
+.floating-icons .f1{ animation-delay:0.2s; }
+.floating-icons .f2{ animation-delay:0.6s; }
+.floating-icons .f3{ animation-delay:0.9s; }
+@keyframes float{ 0%{transform:translateY(0)} 50%{transform:translateY(-8px)} 100%{transform:translateY(0)} }
+
+.disease-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:20px; }
+.disease-card{ padding:18px; display:flex; flex-direction:column; gap:10px; align-items:flex-start; position:relative; transition: transform 0.2s, box-shadow 0.2s; }
+.disease-card:hover{ transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,207,232,0.12); }
+.coming-soon-badge{ position: absolute; top: 12px; right: 12px; background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.3px; box-shadow: 0 2px 8px rgba(16,185,129,0.3); z-index: 2; }
+.d-icon{ font-size:28px; }
+.d-title{ font-weight:800; font-size:16px; color: #032a2a; }
+.d-desc{ color:var(--muted); font-size:13px; line-height: 1.4; }
+.d-detail{ font-size:12px; color:#888; margin-bottom:10px; line-height: 1.3; }
+.primary.small{ padding:8px 10px; margin-top:auto; align-self:stretch; text-align:center; }
+
+.d-3d{ width:80px; height:80px; border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:linear-gradient(180deg,#ffffff,#e9fbff); box-shadow:0 8px 22px rgba(2,16,23,0.04); margin-bottom: 6px; }
+.d-3d .d-3d-inner{ display:flex; flex-direction:column; align-items:center; gap: 2px; }
+.d-icon-main{ font-size:32px; line-height: 1; }
+.d-icon-secondary{ font-size:18px; opacity: 0.7; line-height: 1; }
+.d-3d-heart{ background:linear-gradient(180deg,#ffe9e9,#fff0ee); }
+.d-3d-brain{ background:linear-gradient(180deg,#fff7e6,#fffaf0); }
+.d-3d-lungs{ background:linear-gradient(180deg,#e6faff,#e9fbff); }
+.d-3d-tumor{ background:linear-gradient(180deg,#fff0f7,#fff2f9); }
+.d-3d-gland{ background:linear-gradient(180deg,#f1fff0,#f3fff2); }
+.d-3d-stomach{ background:linear-gradient(180deg,#fff8e6,#fff9f0); }
+.d-3d-waves{ background:linear-gradient(180deg,#f0f8ff,#f5fbff); }
+
+.d-actions{ display:flex; gap:8px; margin-top:auto; }
+.d-actions .primary{ background: var(--primary-color, #00cfe8); color: #fff; border: none; }
+.d-actions .ghost{ background: transparent; color: var(--primary-color, #00cfe8); border: 1px solid var(--primary-color, #00cfe8); }
+
+.disease-info-modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.35); z-index:80; }
+.disease-info-modal.open{ display:flex; }
+.modal-card{ width:520px; background:var(--card-bg); padding:24px; border-radius:12px; box-shadow:0 10px 36px rgba(2,16,23,0.12); }
+.modal-card h4{ margin-top: 0; margin-bottom: 14px; color: #032a2a; }
+.modal-card p{ margin: 8px 0; line-height: 1.6; }
+.modal-card strong{ color: #032a2a; }
+.modal-actions{ margin-top: 16px; }
+
+.upload-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:16px; }
+.upload-grid textarea{ width:100%; min-height:80px; }
+.upload-actions{ grid-column:1/-1; display:flex; gap:10px; justify-content:flex-end; }
+
+/* Specialized Alzheimer minimalist box */
+.alz-box{ background:linear-gradient(145deg,#ffffff 0%, #f1fcff 100%); border:1px solid rgba(0,207,232,0.18); box-shadow:0 14px 42px rgba(2,16,23,0.08); border-radius:22px; padding:46px 52px; max-width:1080px; margin:6px auto 40px; position:relative; overflow:hidden; }
+.alz-box:before{ content:""; position:absolute; inset:0; background:radial-gradient(circle at 85% 25%, rgba(0,207,232,0.22), transparent 72%); pointer-events:none; }
+.alz-box h3{ margin:0 0 22px 0; font-size:28px; font-weight:800; letter-spacing:0.3px; color:#032a2a; display:flex; align-items:center; gap:12px; }
+.alz-box .alz-actions{ margin-top:26px; display:flex; gap:20px; }
+.alz-box input[type=file]{ padding:16px 14px; background:#fff; border:1px solid rgba(0,207,232,0.35); border-radius:14px; width:100%; cursor:pointer; font-size:15px; }
+.alz-box .mini-note{ font-size:13px; color:var(--muted); margin-top:10px; }
+.alz-box .primary{ min-width:200px; padding:16px 26px; font-size:15px; font-weight:600; background: var(--primary-color, #00cfe8); color: #fff; border: none; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+.alz-box .primary:hover{ transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,207,232,0.3); }
+.alz-box .ghost{ background:#fff; padding:16px 26px; font-size:15px; color: var(--primary-color, #00cfe8); border: 1px solid var(--primary-color, #00cfe8); border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+.alz-box .ghost:hover{ background: rgba(0,207,232,0.05); }
+
+/* Generic centered disease box variants */
+.inline-box{ background:linear-gradient(145deg,#ffffff 0%, #f1fcff 100%); border:1px solid rgba(0,207,232,0.16); box-shadow:0 14px 40px rgba(2,16,23,0.07); border-radius:22px; padding:44px 50px; max-width:1080px; margin:6px auto 46px; position:relative; }
+.inline-box.tumor{ background:linear-gradient(145deg,#fff7fb 0%, #fef2f9 100%); border-color:rgba(248,110,180,0.35); }
+.inline-box.parkinsons{ background:linear-gradient(145deg,#f8faff 0%, #eef7ff 100%); border-color:rgba(0,150,255,0.35); }
+.inline-box h3{ margin:0 0 22px; font-size:28px; font-weight:800; letter-spacing:0.3px; color:#032a2a; display:flex; align-items:center; gap:12px; }
+.inline-box input[type=file]{ padding:16px 14px; background:#fff; border:1px solid rgba(0,207,232,0.35); border-radius:14px; width:100%; cursor:pointer; font-size:15px; }
+.inline-box .actions{ margin-top:26px; display:flex; gap:20px; }
+.inline-box .actions .primary{ min-width:200px; padding:16px 26px; font-size:15px; font-weight:600; background: var(--primary-color, #00cfe8); color: #fff; border: none; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+.inline-box .actions .primary:hover{ transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,207,232,0.3); }
+.inline-box .actions .ghost{ background:#fff; padding:16px 26px; font-size:15px; color: var(--primary-color, #00cfe8); border: 1px solid var(--primary-color, #00cfe8); border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+.inline-box .actions .ghost:hover{ background: rgba(0,207,232,0.05); }
+.inline-box .mini-note{ font-size:13px; color:var(--muted); margin-top:10px; }
+.center-header{ display:flex; justify-content:center; }
+.center-header-inner{ display:flex; align-items:center; gap:20px; justify-content:center; }
+
+
+@media (max-width:700px){
+  .inline-box{ padding:30px 28px; max-width:100%; }
+  .inline-box h3{ font-size:24px; }
+  .inline-box .actions{ flex-direction:column; }
+  .inline-box .actions button, .inline-box .actions a{ width:100%; justify-content:center; }
+}
+
+@media (max-width:700px){
+  .alz-box{ padding:30px 28px; max-width:100%; }
+  .alz-box h3{ font-size:24px; }
+  .alz-box .alz-actions{ flex-direction:column; }
+  .alz-box .primary, .alz-box .ghost{ width:100%; justify-content:center; }
+}
+
+/* Centering overrides specifically for Alzheimer's page */
+.alz-wrapper{ background:transparent !important; box-shadow:none !important; border:none !important; padding:0 !important; display:flex; flex-direction:column; align-items:center; }
+.alz-hdr{ display:flex; justify-content:center; }
+.alz-hdr > div{ width:100%; display:flex; justify-content:center; }
+.alz-hdr h2{ text-align:center; }
+
+.analysis-grid{ display:flex; gap:12px; padding:12px; }
+.result-left{ width:320px; display:flex; flex-direction:column; gap:8px; }
+.score{ font-size:48px; font-weight:800; color:#FF6B6B; }
+.heatmap{ height:160px; display:flex; align-items:center; justify-content:center; color:var(--muted); }
+
+.chart-row{ display:flex; gap:12px; margin-top:8px; }
+.chart-title{ color:var(--muted); font-size:13px; }
+
+.center{ text-align:center; }
+
+@media (max-width:900px){
+  .disease-grid{ grid-template-columns:repeat(2,1fr); }
+  .ed-hero{ flex-direction:column; align-items:flex-start; }
+  .upload-grid{ grid-template-columns:1fr; }
+}
+
+/* small responsiveness tweaks */
+@media (max-width:600px){
+  .disease-grid{ grid-template-columns:1fr; }
+  .ed-hero{ padding:18px; }
+}
+
+/* Additional responsive refinements */
+@media (max-width:1100px){
+  .disease-grid{ grid-template-columns:repeat(3,1fr); }
+}
+@media (max-width:780px){
+  .hero-left h1{ font-size:28px; }
+  .hero-actions{ flex-wrap:wrap; }
+}
+@media (max-width:520px){
+  .hero-left h1{ font-size:26px; }
+  .hero-actions{ flex-direction:column; width:100%; }
+  .hero-actions .primary, .hero-actions .ghost{ width:100%; justify-content:center; }
+  .alz-box, .inline-box{ padding:30px 24px; }
+  .alz-box h3, .inline-box h3{ font-size:22px; }
+}
