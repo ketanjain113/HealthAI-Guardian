@@ -12,8 +12,6 @@ yarn-error.log*
 .cache/
 
 # Environment & secrets
-.env
-.env.*
 *.key
 
 # Python
@@ -28,10 +26,7 @@ __pycache__/
 venv/
 env/
 
-# Model artifacts
-*.h5
-*.keras
-*.pkl
+# Model artifact
 *.joblib
 *.onnx
 
