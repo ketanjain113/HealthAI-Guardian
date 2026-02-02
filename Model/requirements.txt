@@ -2,11 +2,9 @@ Flask>=2.3
 flask-cors>=4.0
 numpy>=1.24
 Pillow>=10.0
-scikit-learn==1.6.0
-xgboost>=1.7
+scikit-learn==1.5.1
 opencv-python-headless>=4.8
 scikit-image>=0.21
 h5py>=3.10
 joblib>=1.2
-onnxruntime>=1.18
 tensorflow>=2.10
