@@ -4,8 +4,8 @@ FROM node:18-slim
 # Set working directory in container
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY package.json package-lock.json ./
+# Copy package.json (and package-lock.json if it exists)
+COPY package.json* ./
 
 # Install dependencies
 RUN npm install --production
