@@ -37,13 +37,7 @@ router.post("/symptom-check", async (req, res) => {
     {
       role: "system",
       content: "You are a medical assistant. Only provide health analysis if the user describes actual symptoms. If the input is not a symptom or is unclear, ask them to describe their symptoms properly. Be concise and professional.",
-    {
-      role: "user",
-      content: `Symptoms: ${symptom}`,
-    },
-  ],
-});
-
+    },
 
     const reply =
       completion?.choices?.[0]?.message?.content ||
