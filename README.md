@@ -119,12 +119,6 @@ Open the app at `http://localhost:3000`.
 - If uploads fail: verify `multer` config and that Model API is reachable
 - For mobile tweaks: adjust CSS in `App.css`, `Vitals.css`, `EarlyDetection.css`, `Login.css`, `Signup.css`, `DoctorPanel.css`
 
-## Collabrators
- - [Ketan Jain](https://github.com/ketanjain113)
- - [Sarthak Mahajan](https://github.com/Sarthakm811)
- - [Kavish Jain](https://github.com/kavish200)
- - [Harsh Malviya](https://github.com/harshfly)
-
 ## Acknowledgements
 - Open‑source libraries and frameworks powering the stack
 
