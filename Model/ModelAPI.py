@@ -85,21 +85,19 @@ def _load_models() -> None:
     pk_path = os.path.join(BASE_DIR, "parkinson_model.pkl")
     if os.path.isfile(pk_path) and "parkinson" not in MODELS:
         try:
-            try:
-                pk_obj = joblib.load(pk_path)
-            except Exception:
-                with open(pk_path, "rb") as f:
-                    pk_obj = pickle.load(f)
+            # Use joblib exclusively (file was saved with joblib)
+            pk_obj = joblib.load(pk_path)
             if isinstance(pk_obj, dict) and 'model' in pk_obj and 'scaler' in pk_obj:
                 MODELS["parkinson"] = {"type": "sklearn", "model": pk_obj['model'], "scaler": pk_obj['scaler']}
                 MODELS["parkinsons"] = MODELS["parkinson"]
                 MODEL_PATHS["parkinson"] = pk_path
                 MODEL_PATHS["parkinsons"] = pk_path
-                logging.info("Loaded Parkinson PKL model")
+                logging.info("Loaded Parkinson PKL model with joblib")
             else:
                 SKIPPED["parkinson"] = "PKL missing expected keys (model, scaler)"
         except Exception as e:
-            SKIPPED["parkinson"] = f"Failed to load PKL: {e}"
+            SKIPPED["parkinson"] = f"Failed to load PKL with joblib: {e}"
+            logging.error(f"Parkinson model load error: {e}")
 
 
 def _get_target_size_and_channels(model) -> Tuple[Tuple[int, int], int, bool]:
