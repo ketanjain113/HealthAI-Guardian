@@ -8,7 +8,5 @@ xgboost>=1.7
 opencv-python-headless>=4.8
 scikit-image>=0.21
 h5py>=3.10
-pickle>=2.0
 joblib>=1.2
 onnxruntime>=1.18
-scikit-image>=0.21
