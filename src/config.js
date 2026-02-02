@@ -1,8 +1,8 @@
 // src/config.js
 // Configuration for API endpoints based on environment
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
-const MODEL_API_URL = process.env.REACT_APP_MODEL_API_URL || 'http://localhost:5000';
+const API_BASE_URL = (process.env.REACT_APP_API_URL || 'http://localhost:8080').replace(/\/$/, '');
+const MODEL_API_URL = (process.env.REACT_APP_MODEL_API_URL || 'http://localhost:5000').replace(/\/$/, '');
 
 export const config = {
   API_BASE_URL,
