@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Predictions.css';
+import { config } from './config';
 
 // small sparkline
 const TrendChart = ({ data = [], stroke = '#00cfe8', width = 220, height = 48 }) => {
@@ -75,7 +76,7 @@ function Dashboard(){
   async function fetchDashboardData() {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:8080/api/dashboard/user/${userId}`);
+      const response = await fetch(config.endpoints.dashboard.user(userId));
       if (!response.ok) throw new Error('Failed to fetch dashboard data');
       const data = await response.json();
       const userData = {
@@ -110,7 +111,7 @@ function Dashboard(){
     try {
       const uid = localStorage.getItem('userId');
       if (!uid) { alert('Please login to edit profile.'); return; }
-      const res = await fetch(`http://localhost:8080/api/dashboard/user/${uid}/profile`, {
+      const res = await fetch(config.endpoints.dashboard.profile(uid), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(profileDraft)
@@ -139,7 +140,7 @@ function Dashboard(){
         severity: /high|severe/i.test(user.lastScan.status) ? 'High' : (/moderate|medium/i.test(user.lastScan.status) ? 'Moderate' : 'Low'),
         details: { source: 'dashboard', savedAt: new Date().toISOString() }
       };
-      const res = await fetch(`http://localhost:8080/api/dashboard/user/${uid}/test-result`, {
+      const res = await fetch(config.endpoints.dashboard.testResult(uid), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

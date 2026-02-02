@@ -13,11 +13,22 @@ yarn-error.log*
 
 # Environment & secrets
 *.key
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Python
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
+*.egg-info/
+.Python
+venv/
+env/
 *.pyd
 *.swp
 .eggs/

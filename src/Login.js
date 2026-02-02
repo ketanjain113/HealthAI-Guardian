@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./Login.css";
 import Shield from "./assets/shield.png";
+import { config } from "./config";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -10,7 +11,7 @@ function Login() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:8080/api/auth/login", {
+      const res = await fetch(config.endpoints.auth.login, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

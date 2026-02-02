@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Routes, Route, Link, useNavigate, useParams } from 'react-router-dom';
 import './EarlyDetection.css';
+import { config } from './config';
 
 const diseases = [
   { key: 'parkinsons', title: "Parkinson's", icon: '🧠', emoji: '🤝', desc: 'Early-stage tremor + neuro prediction', type: 'brain', detail: 'Tremor, rigidity, bradykinesia, voice changes' },
@@ -132,9 +133,9 @@ function DiseasePage(){
         else if (disease === 'alzheimers') fileObj = files.mri;
         else if (disease === 'parkinsons') fileObj = files.hand;
         formData.append('image', fileObj);
-        let endpoint = 'http://localhost:8080/api/predict/alzheimer';
-        if (disease === 'tumor') endpoint = 'http://localhost:8080/api/predict/tumor';
-        else if (disease === 'parkinsons') endpoint = 'http://localhost:8080/api/predict/parkinsons';
+        let endpoint = config.endpoints.predict.alzheimer;
+        if (disease === 'tumor') endpoint = config.endpoints.predict.tumor;
+        else if (disease === 'parkinsons') endpoint = config.endpoints.predict.parkinsons;
         const userId = localStorage.getItem('userId');
         const response = await fetch(endpoint, { 
           method: 'POST', 

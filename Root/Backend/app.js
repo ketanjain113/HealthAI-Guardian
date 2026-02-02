@@ -15,6 +15,15 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// =========================
+// ENVIRONMENT CONFIGURATION
+// =========================
+const MODEL_API_URL = process.env.MODEL_API_URL || 'http://localhost:5000';
+const PORT = process.env.PORT || 8080;
+
+console.log('Configuration:');
+console.log('MODEL_API_URL:', MODEL_API_URL);
+console.log('PORT:', PORT);
 
 // =========================
 // CONNECT MONGODB
@@ -37,7 +46,7 @@ app.post("/api/process-symptoms", async (req, res) => {
   const { symptoms } = req.body;
 
   try {
-    const response = await axios.post("http://localhost:5000/api/diagnose", {
+    const response = await axios.post(`${MODEL_API_URL}/api/diagnose`, {
       symptoms: symptoms,
     });
 
@@ -70,7 +79,7 @@ app.post("/api/predict/alzheimer", upload.single('image'), async (req, res) => {
       contentType: req.file.mimetype,
     });
 
-    const response = await axios.post("http://localhost:5000/predict/alzheimer", formData, {
+    const response = await axios.post(`${MODEL_API_URL}/predict/alzheimer`, formData, {
       headers: {
         ...formData.getHeaders(),
       },
@@ -124,7 +133,7 @@ app.post('/api/predict/tumor', upload.single('image'), async (req, res) => {
       filename: req.file.originalname,
       contentType: req.file.mimetype,
     });
-    const response = await axios.post('http://localhost:5000/predict/brain_tumor', formData, {
+    const response = await axios.post(`${MODEL_API_URL}/predict/brain_tumor`, formData, {
       headers: { ...formData.getHeaders() },
     });
     // Auto-save
@@ -174,7 +183,7 @@ app.post('/api/predict/parkinsons', upload.single('image'), async (req, res) => 
       filename: req.file.originalname,
       contentType: req.file.mimetype,
     });
-    const response = await axios.post('http://localhost:5000/predict/parkinson', formData, {
+    const response = await axios.post(`${MODEL_API_URL}/predict/parkinson`, formData, {
       headers: { ...formData.getHeaders() },
     });
     // Auto-save
@@ -212,8 +221,8 @@ app.post('/api/predict/parkinsons', upload.single('image'), async (req, res) => 
 
 
 // =========================
-// START NODE BACKEND ON PORT 8080
+// START NODE BACKEND ON PORT
 // =========================
-app.listen(8080, () => {
-  console.log("Node Backend running on port 8080");
+app.listen(PORT, () => {
+  console.log(`Node Backend running on port ${PORT}`);
 });
