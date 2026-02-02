@@ -12,8 +12,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code
 COPY ModelAPI.py .
-COPY *.h5 ./
-COPY *.pkl ./
+
+# Copy model files explicitly
+COPY Alzimer.h5 ./
+COPY brain_tumor_cnn_model.h5 ./
+COPY parkinson_model.pkl ./
 
 # Expose port 5000 for Flask
 EXPOSE 5000
