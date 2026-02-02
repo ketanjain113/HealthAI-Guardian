@@ -51,9 +51,7 @@ PREDICTION_API=https://healthai-models-xxxx.railway.app/api/diagnose
 NODE_ENV=production
 PORT=8080
 JWT_SECRET=generate-a-random-key-using-openssl
-GOOGLE_API_KEY=your_actual_google_api_key
 OPENROUTER_API_KEY=your_actual_openrouter_key
-OPENAI_API_KEY=your_actual_openai_key
 ```
 
 **Variable Explanation:**
@@ -66,9 +64,7 @@ OPENAI_API_KEY=your_actual_openai_key
 | `NODE_ENV` | Environment type | `production` |
 | `PORT` | Backend port | `8080` |
 | `JWT_SECRET` | Random secret for tokens | Generate with: `openssl rand -hex 32` |
-| `GOOGLE_API_KEY` | Your Google API key | From Google Cloud Console |
 | `OPENROUTER_API_KEY` | Your OpenRouter API key | From OpenRouter |
-| `OPENAI_API_KEY` | Your OpenAI API key | From OpenAI |
 
 ---
 
@@ -181,9 +177,7 @@ export const config = {
    - `NODE_ENV` = `production`
    - `PORT` = `8080`
    - `JWT_SECRET` = generate random secret
-   - `GOOGLE_API_KEY` = your key
    - `OPENROUTER_API_KEY` = your key
-   - `OPENAI_API_KEY` = your key
 5. **Deploy**
 6. **Wait for deployment**
 7. **Copy the public URL** (e.g., `https://healthai-backend-abc123.railway.app`)
@@ -230,9 +224,7 @@ openssl rand -hex 32
 
 ### API Keys
 
-- **GOOGLE_API_KEY**: Get from [Google Cloud Console](https://console.cloud.google.com)
 - **OPENROUTER_API_KEY**: Get from [OpenRouter](https://openrouter.ai)
-- **OPENAI_API_KEY**: Get from [OpenAI API](https://platform.openai.com)
 
 ---
 
@@ -289,18 +281,18 @@ If you need to change a variable:
 
 **Model API Service:** `No variables needed`
 
-**Backend Service:** 8 variables
+**Backend Service:** 7 variables
 - 1 Database (MONGO_URI)
 - 2 Model URLs (MODEL_API_URL, PREDICTION_API)
-- 1 Node config (NODE_ENV, PORT)
+- 2 Node config (NODE_ENV, PORT)
 - 1 Auth (JWT_SECRET)
-- 3 API keys (Google, OpenRouter, OpenAI)
+- 1 API key (OpenRouter)
 
 **Frontend Service:** 2 variables
 - REACT_APP_API_URL
 - REACT_APP_MODEL_API_URL
 
-**Total:** 10 variables across all services
+**Total:** 9 variables across all services
 
 ---
 
