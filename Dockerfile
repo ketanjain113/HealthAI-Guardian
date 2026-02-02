@@ -3,12 +3,14 @@ FROM node:18-slim AS builder
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+# Copy package files
+COPY package*.json ./
 
 RUN npm install
 
-# Copy source code
-COPY . .
+# Copy public directory and source code
+COPY public/ ./public/
+COPY src/ ./src/
 
 # Build the React app
 RUN npm run build
