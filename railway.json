@@ -1,6 +1,10 @@
 {
   "$schema": "https://railway.app/schema.json",
   "build": {
-    "builder": "dockerfile"
+    "builder": "dockerfile",
+    "buildArgs": [
+      "REACT_APP_API_URL",
+      "REACT_APP_MODEL_API_URL"
+    ]
   }
 }
