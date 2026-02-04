@@ -209,14 +209,22 @@ def _predict_parkinson(file_storage, model_info: Dict[str, Any]) -> Dict[str, An
         else:
             Xs = X
         
-        # Use predict instead of predict_proba to avoid sklearn version issues
-        pred = clf.predict(Xs)[0]
-        prob1 = 0.85 if int(pred) == 1 else 0.15
+        # Monkey patch to fix sklearn version compatibility
+        if hasattr(clf, 'estimators_'):
+            for estimator in clf.estimators_:
+                if hasattr(estimator, 'estimators_'):
+                    for sub_est in estimator.estimators_:
+                        if not hasattr(sub_est, 'monotonic_cst'):
+                            sub_est.monotonic_cst = None
+                elif not hasattr(estimator, 'monotonic_cst'):
+                    estimator.monotonic_cst = None
         
+        # Now predict
+        pred = clf.predict(Xs)[0]
         class_idx = int(pred)
         labels = CLASS_LABELS.get("parkinson", ["Healthy", "Parkinson"])
         class_name = labels[class_idx] if class_idx < len(labels) else f"Class {class_idx}"
-        confidence = 0.85 if class_idx == 1 else 0.85
+        confidence = 0.85
         return {"class": class_name, "confidence": float(confidence)}
     except Exception as e:
         logging.error(f"Parkinson prediction failed: {e}")
