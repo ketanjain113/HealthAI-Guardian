@@ -26,7 +26,15 @@ router.post("/symptom-check", async (req, res) => {
 
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-pro",
+      generationConfig: {
+        temperature: 0.9,
+        topK: 40,
+        topP: 0.8,
+        maxOutputTokens: 2048
+      }
+    });
     
     const prompt = `You are a health assistant. User says: "${input}". Provide a brief, helpful response (max 150 words).`;
     
