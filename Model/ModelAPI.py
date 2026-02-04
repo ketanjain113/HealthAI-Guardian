@@ -20,6 +20,7 @@ except Exception:
     _SKIMAGE_OK = False
 import pickle
 import joblib
+import h5py
 
 try:
     import keras
@@ -81,22 +82,30 @@ def _load_models() -> None:
             SKIPPED[name] = f"Failed to load: {e}"
             logging.warning(f"Skipping {name}: {e}")
 
-    # Load Parkinson PKL if present (outside MODEL_PATHS which only tracks .h5)
-    pk_path = os.path.join(BASE_DIR, "parkinson_model.pkl")
-    if os.path.isfile(pk_path) and "parkinson" not in MODELS:
+    # Load Parkinson H5 enhanced model if present
+    h5_path = os.path.join(BASE_DIR, "parkinson_model.h5")
+    if os.path.isfile(h5_path) and "parkinson" not in MODELS:
         try:
-            # Use joblib exclusively (file was saved with joblib)
-            pk_obj = joblib.load(pk_path)
-            if isinstance(pk_obj, dict) and 'model' in pk_obj and 'scaler' in pk_obj:
-                MODELS["parkinson"] = {"type": "sklearn", "model": pk_obj['model'], "scaler": pk_obj['scaler']}
+            with h5py.File(h5_path, 'r') as h5f:
+                # Load scaler
+                scaler_mean = np.array(h5f['scaler']['mean'][:])
+                scaler_scale = np.array(h5f['scaler']['scale'][:])
+                
+                # Load pickled model
+                model_data = bytes(h5f['pickle_model']['data'][:])
+                model_obj = pickle.loads(model_data)
+                
+                MODELS["parkinson"] = {
+                    "type": "sklearn_ensemble",
+                    "model": model_obj['model'],
+                    "scaler": model_obj['scaler']
+                }
                 MODELS["parkinsons"] = MODELS["parkinson"]
-                MODEL_PATHS["parkinson"] = pk_path
-                MODEL_PATHS["parkinsons"] = pk_path
-                logging.info("Loaded Parkinson PKL model with joblib")
-            else:
-                SKIPPED["parkinson"] = "PKL missing expected keys (model, scaler)"
+                MODEL_PATHS["parkinson"] = h5_path
+                MODEL_PATHS["parkinsons"] = h5_path
+                logging.info("Loaded Parkinson enhanced ensemble model from HDF5")
         except Exception as e:
-            SKIPPED["parkinson"] = f"Failed to load PKL with joblib: {e}"
+            SKIPPED["parkinson"] = f"Failed to load H5 model: {e}"
             logging.error(f"Parkinson model load error: {e}")
 
 
