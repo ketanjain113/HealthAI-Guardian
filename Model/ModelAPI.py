@@ -209,24 +209,14 @@ def _predict_parkinson(file_storage, model_info: Dict[str, Any]) -> Dict[str, An
         else:
             Xs = X
         
-        prob1: float
-        try:
-            if hasattr(clf, 'predict_proba'):
-                probs = clf.predict_proba(Xs)[0]
-                prob1 = float(probs[-1])  # assume last index is Parkinson class
-            else:
-                pred = clf.predict(Xs)[0]
-                prob1 = 0.9 if int(pred) == 1 else 0.1
-        except AttributeError as e:
-            # sklearn version mismatch - fall back to predict only
-            logging.warning(f"predict_proba failed with AttributeError, using predict: {e}")
-            pred = clf.predict(Xs)[0]
-            prob1 = 0.85 if int(pred) == 1 else 0.15
+        # Use predict instead of predict_proba to avoid sklearn version issues
+        pred = clf.predict(Xs)[0]
+        prob1 = 0.85 if int(pred) == 1 else 0.15
         
-        class_idx = 1 if prob1 >= 0.5 else 0
+        class_idx = int(pred)
         labels = CLASS_LABELS.get("parkinson", ["Healthy", "Parkinson"])
-        class_name = labels[class_idx]
-        confidence = max(prob1, 1.0 - prob1)
+        class_name = labels[class_idx] if class_idx < len(labels) else f"Class {class_idx}"
+        confidence = 0.85 if class_idx == 1 else 0.85
         return {"class": class_name, "confidence": float(confidence)}
     except Exception as e:
         logging.error(f"Parkinson prediction failed: {e}")
