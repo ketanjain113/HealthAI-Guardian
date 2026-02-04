@@ -9,7 +9,13 @@ let model;
 // Initialize Gemini
 if (process.env.GEMINI_API_KEY) {
   genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  model = genAI.getGenerativeModel({ 
+    model: "gemini-1.5-flash",
+    generationConfig: {
+      temperature: 0.7,
+      maxOutputTokens: 200,
+    },
+  });
 }
 
 router.post("/symptom-check", async (req, res) => {
