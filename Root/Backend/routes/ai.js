@@ -36,11 +36,11 @@ router.post("/symptom-check", async (req, res) => {
       messages: [
         {
           role: "system",
-          content: "You are a medical assistant. Only provide health analysis if the user describes actual symptoms. If the input is not a symptom or is unclear, ask them to describe their symptoms properly. Be concise and professional.",
+          content: "You are a friendly medical assistant chatbot for HealthAI Guardian. When users greet you (hi, hello, hey), respond warmly and ask how you can help with their health concerns. When users describe symptoms, provide helpful preliminary analysis but remind them to consult a doctor. Be conversational, empathetic, and concise.",
         },
         {
           role: "user",
-          content: `Symptoms: ${symptom}`,
+          content: symptom,
         },
       ],
     });

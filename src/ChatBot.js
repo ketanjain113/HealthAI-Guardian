@@ -1,13 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./ChatBot.css";
-import RobotImg from "./assets/robot.png"; // Place the provided robot image at src/assets/robot.png
+import RobotImg from "./assets/robot.png";
+import { config } from './config';
 
 export default function ChatBot() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: "bot", text: "Hi! I'm your HealthAI assistant. How can I help?" }
+    { role: "bot", text: "Hi! I'm your HealthAI assistant. How can I help you today?" }
   ]);
   const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
   const panelRef = useRef(null);
 
   useEffect(() => {
@@ -16,10 +18,29 @@ export default function ChatBot() {
     }
   }, [open]);
 
-  const sendMessage = () => {
-    if (!input.trim()) return;
-    setMessages(m => [...m, { role: "user", text: input.trim() }, { role: "bot", text: "Got it! I will process that." }]);
+  const sendMessage = async () => {
+    if (!input.trim() || loading) return;
+    
+    const userMessage = input.trim();
+    setMessages(m => [...m, { role: "user", text: userMessage }]);
     setInput("");
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${config.API_BASE_URL}/api/ai/symptom-check`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ symptom: userMessage })
+      });
+
+      const data = await response.json();
+      setMessages(m => [...m, { role: "bot", text: data.reply || "I couldn't process that. Please try again." }]);
+    } catch (error) {
+      console.error('Chatbot error:', error);
+      setMessages(m => [...m, { role: "bot", text: "Sorry, I'm having trouble connecting. Please try again later." }]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -47,6 +68,7 @@ export default function ChatBot() {
           {messages.map((m, i) => (
             <div key={i} className={`msg ${m.role}`}>{m.text}</div>
           ))}
+          {loading && <div className="msg bot">Thinking...</div>}
         </div>
         <div className="chat-input-row">
           <input
