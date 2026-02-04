@@ -7,6 +7,7 @@ opencv-python-headless>=4.8
 scikit-image>=0.21
 h5py>=3.10
 joblib>=1.2
-tensorflow>=2.10
 xgboost==2.0.3
 scipy==1.11.4
+# TensorFlow for Keras models (Alzheimer, Brain Tumor) - optional if too slow in build
+# tensorflow>=2.10,<2.15

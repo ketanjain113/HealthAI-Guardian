@@ -29,7 +29,9 @@ except Exception:
     try:
         from tensorflow.keras.models import load_model  
     except Exception as e:
-        raise RuntimeError("Neither standalone Keras nor tensorflow.keras is available. Install with 'pip install keras tensorflow'.") from e
+        # TensorFlow is optional - only needed for Keras models (Alzheimer, Brain Tumor)
+        load_model = None
+        logging.warning("TensorFlow/Keras not available - Keras models (Alzheimer, Brain Tumor) will be skipped")
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -73,6 +75,10 @@ CLASS_LABELS = {
 def _load_models() -> None:
     for name, path in MODEL_PATHS.items():
         if name in MODELS:
+            continue
+        if load_model is None:
+            SKIPPED[name] = "TensorFlow/Keras not installed"
+            logging.warning(f"⚠️  Skipping Keras model {name}: TensorFlow not installed")
             continue
         try:
             mdl = load_model(path)
