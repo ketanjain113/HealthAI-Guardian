@@ -77,21 +77,18 @@ def _load_models() -> None:
         try:
             mdl = load_model(path)
             MODELS[name] = {"type": "keras", "model": mdl}
-            logging.info(f"Loaded Keras model: {name} -> {path}")
+            logging.info(f"✓ Loaded Keras model: {name} -> {path}")
         except Exception as e:
             SKIPPED[name] = f"Failed to load: {e}"
-            logging.warning(f"Skipping {name}: {e}")
+            logging.warning(f"✗ Skipping {name}: {e}")
 
-    # Load Parkinson H5 enhanced model if present
     h5_path = os.path.join(BASE_DIR, "parkinson_model.h5")
     if os.path.isfile(h5_path) and "parkinson" not in MODELS:
         try:
             with h5py.File(h5_path, 'r') as h5f:
-                # Load scaler
                 scaler_mean = np.array(h5f['scaler']['mean'][:])
                 scaler_scale = np.array(h5f['scaler']['scale'][:])
                 
-                # Load pickled model
                 model_data = bytes(h5f['pickle_model']['data'][:])
                 model_obj = pickle.loads(model_data)
                 
@@ -103,10 +100,10 @@ def _load_models() -> None:
                 MODELS["parkinsons"] = MODELS["parkinson"]
                 MODEL_PATHS["parkinson"] = h5_path
                 MODEL_PATHS["parkinsons"] = h5_path
-                logging.info("Loaded Parkinson enhanced ensemble model from HDF5")
+                logging.info(f"✓ Loaded Parkinson enhanced ensemble model from HDF5 ({h5_path})")
         except Exception as e:
             SKIPPED["parkinson"] = f"Failed to load H5 model: {e}"
-            logging.error(f"Parkinson model load error: {e}")
+            logging.error(f"✗ Parkinson model load error: {e}")
 
 
 def _get_target_size_and_channels(model) -> Tuple[Tuple[int, int], int, bool]:
@@ -204,31 +201,36 @@ def _extract_parkinson_features(gray: np.ndarray) -> np.ndarray:
 
 
 def _predict_parkinson(file_storage, model_info: Dict[str, Any]) -> Dict[str, Any]:
-    # Read image as grayscale
-    raw = file_storage.read()
-    file_storage.stream.seek(0)
-    img = Image.open(io.BytesIO(raw)).convert("L").resize((128, 128))
-    gray = np.array(img)
-    X = _extract_parkinson_features(gray)
-    scaler = model_info.get("scaler")
-    clf = model_info.get("model")
-    if scaler is not None:
-        Xs = scaler.transform(X)
-    else:
-        Xs = X
-    prob1: float
-    if hasattr(clf, 'predict_proba'):
-        probs = clf.predict_proba(Xs)[0]
-        prob1 = float(probs[-1])  # assume last index is Parkinson class
-    else:
-        pred = clf.predict(Xs)[0]
-        # convert hard label to pseudo-probability
-        prob1 = 0.9 if int(pred) == 1 else 0.1
-    class_idx = 1 if prob1 >= 0.8 else 0
-    labels = CLASS_LABELS.get("parkinson", ["Healthy", "Parkinson"])
-    class_name = labels[class_idx]
-    confidence = max(prob1, 1.0 - prob1)
-    return {"class": class_name, "confidence": float(confidence)}
+    try:
+        # Read image as grayscale
+        raw = file_storage.read()
+        file_storage.stream.seek(0)
+        img = Image.open(io.BytesIO(raw)).convert("L").resize((128, 128))
+        gray = np.array(img)
+        X = _extract_parkinson_features(gray)
+        scaler = model_info.get("scaler")
+        clf = model_info.get("model")
+        if scaler is not None:
+            Xs = scaler.transform(X)
+        else:
+            Xs = X
+        prob1: float
+        if hasattr(clf, 'predict_proba'):
+            probs = clf.predict_proba(Xs)[0]
+            # For ensemble, get probability of positive class (Parkinson)
+            prob1 = float(probs[-1]) if len(probs) > 1 else float(probs[0])
+        else:
+            pred = clf.predict(Xs)[0]
+            # convert hard label to pseudo-probability
+            prob1 = 0.9 if int(pred) == 1 else 0.1
+        class_idx = 1 if prob1 >= 0.5 else 0
+        labels = CLASS_LABELS.get("parkinson", ["Healthy", "Parkinson's"])
+        class_name = labels[class_idx]
+        confidence = max(prob1, 1.0 - prob1)
+        return {"class": class_name, "confidence": float(confidence)}
+    except Exception as e:
+        logging.error(f"Parkinson prediction error: {e}")
+        return {"class": "Error", "confidence": 0.0}
 
 
 def _predict_with_model(model, batch: np.ndarray, model_name: str, threshold: float | None = None) -> Dict[str, Any]:
@@ -305,7 +307,7 @@ def predict(model_name: str):
         except ValueError:
             threshold = None
 
-    if model_info.get("type") == "sklearn":
+    if model_info.get("type") in ("sklearn", "sklearn_ensemble"):
         out = _predict_parkinson(file_storage, model_info)
         return jsonify({"model": model_name, "class": out["class"], "confidence": out["confidence"]})
 
