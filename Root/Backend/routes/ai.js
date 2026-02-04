@@ -8,38 +8,32 @@ let OpenRouter;
 })();
 
 router.post("/symptom-check", async (req, res) => {
-  const { symptom } = req.body;
+  const { symptom, message, text } = req.body;
+  const rawInput =
+    (typeof symptom === "string" && symptom) ||
+    (typeof message === "string" && message) ||
+    (typeof text === "string" && text) ||
+    "";
 
-  if (!symptom || typeof symptom !== "string") {
+  if (!rawInput || typeof rawInput !== "string") {
     return res.json({ reply: "Please type your message 😊" });
   }
 
   // ✅ Clean input properly
-  const cleaned = symptom
+  const cleaned = rawInput
     .trim()
     .toLowerCase()
     .replace(/[^\w\s]/g, ""); // removes emojis/punctuation
 
   // ✅ SUPER STRONG GREETING BLOCK
-  if (
-    cleaned === "hi" ||
-    cleaned === "hello" ||
-    cleaned === "hey" ||
-    cleaned === "hii" ||
-    cleaned === "hiii"
-  ) {
+  if (/^(hi|hello|hey|hii+|hiii+|yo|sup|good\s(morning|afternoon|evening))\b/.test(cleaned)) {
     return res.json({
       reply: "Hello! I'm HealthAI Assistant 😊 How can I help you today?",
     });
   }
 
   // ✅ Identity block
-  if (
-    cleaned.includes("who are you") ||
-    cleaned.includes("what are you") ||
-    cleaned.includes("what can you do") ||
-    cleaned.includes("what do you do")
-  ) {
+  if (/\b(who are you|what are you|what can you do|what do you do)\b/.test(cleaned)) {
     return res.json({
       reply:
         "I'm HealthAI Assistant — I can help you understand symptoms, suggest possible causes, and give general health advice. Tell me what you're experiencing 😊",
@@ -78,7 +72,7 @@ Never analyze greetings as symptoms.
         },
         {
           role: "user",
-          content: symptom,
+          content: rawInput,
         },
       ],
     });
