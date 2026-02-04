@@ -55,8 +55,8 @@ router.post("/symptom-check", async (req, res) => {
     });
 
     const completion = await openRouter.chat.send({
-      model: "tngtech/deepseek-r1t2-chimera:free",
-      max_tokens: 300,
+      model: process.env.OPENROUTER_MODEL || "mistralai/mistral-7b-instruct:free",
+      max_tokens: 180,
       messages: [
         {
           role: "system",

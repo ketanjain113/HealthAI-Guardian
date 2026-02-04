@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./SymptomChecker.css";
 import RobotImg from "./assets/robot.png";
+import { config } from "./config";
 
 // Enhanced 3D Robot Avatar with float and glow effects
 const ChatbotAvatar = ({ image }) => {
@@ -68,35 +69,45 @@ export default function SymptomChecker() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const handleSend = async () => {
+    if (!input.trim() || isLoading) return;
+
+    const userText = input.trim();
 
     // Add user message
-    const userMessage = { sender: "user", text: input };
+    const userMessage = { sender: "user", text: userText };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
 
-    // Simulate AI response delay
-    setTimeout(() => {
-      const botResponses = [
-        `I understand you're experiencing: "${input}". Based on your symptoms, here are some possible causes:\n\n• Common cold or flu\n• Allergies\n• Stress-related symptoms\n\nPlease consider consulting a healthcare professional for accurate diagnosis.`,
-        `Your symptoms of "${input}" may indicate:\n\n• Dehydration\n• Fatigue\n• Environmental factors\n\nI recommend staying hydrated and getting adequate rest. If symptoms persist, please visit a doctor.`,
-        `Analyzing "${input}"... This could be related to:\n\n• Nutritional deficiency\n• Sleep deprivation\n• Viral or bacterial infection\n\nMonitor your symptoms and seek medical attention if they worsen.`,
-      ];
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
 
-      const randomResponse =
-        botResponses[Math.floor(Math.random() * botResponses.length)];
+    try {
+      const response = await fetch(`${config.API_BASE_URL}/api/ai/symptom-check`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ symptom: userText }),
+        signal: controller.signal,
+      });
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: "bot",
-          text: randomResponse,
-        },
-      ]);
+      const data = await response.json();
+      const reply =
+        typeof data?.reply === "string" && data.reply.trim()
+          ? data.reply.trim()
+          : "I couldn't process that. Please try again.";
+
+      setMessages((prev) => [...prev, { sender: "bot", text: reply }]);
+    } catch (error) {
+      const message =
+        error?.name === "AbortError"
+          ? "The response is taking too long. Please try again."
+          : "Sorry, I'm having trouble connecting. Please try again later.";
+      setMessages((prev) => [...prev, { sender: "bot", text: message }]);
+    } finally {
+      clearTimeout(timeoutId);
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleKeyPress = (e) => {
