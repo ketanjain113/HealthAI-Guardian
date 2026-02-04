@@ -16,7 +16,7 @@ COPY ModelAPI.py .
 # Copy model files explicitly
 COPY Alzimer.h5 ./
 COPY brain_tumor_cnn_model.h5 ./
-COPY parkinson_model.h5 ./
+COPY parkinson_model.pkl ./
 
 # Expose port 5000 for Flask
 EXPOSE 5000

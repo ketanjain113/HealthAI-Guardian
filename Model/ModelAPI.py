@@ -20,7 +20,6 @@ except Exception:
     _SKIMAGE_OK = False
 import pickle
 import joblib
-import h5py
 
 try:
     import keras
@@ -29,9 +28,7 @@ except Exception:
     try:
         from tensorflow.keras.models import load_model  
     except Exception as e:
-        # TensorFlow is optional - only needed for Keras models (Alzheimer, Brain Tumor)
-        load_model = None
-        logging.warning("TensorFlow/Keras not available - Keras models (Alzheimer, Brain Tumor) will be skipped")
+        raise RuntimeError("Neither standalone Keras nor tensorflow.keras is available. Install with 'pip install keras tensorflow'.") from e
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -76,40 +73,31 @@ def _load_models() -> None:
     for name, path in MODEL_PATHS.items():
         if name in MODELS:
             continue
-        if load_model is None:
-            SKIPPED[name] = "TensorFlow/Keras not installed"
-            logging.warning(f"⚠️  Skipping Keras model {name}: TensorFlow not installed")
-            continue
         try:
             mdl = load_model(path)
             MODELS[name] = {"type": "keras", "model": mdl}
-            logging.info(f"✓ Loaded Keras model: {name} -> {path}")
+            logging.info(f"Loaded Keras model: {name} -> {path}")
         except Exception as e:
             SKIPPED[name] = f"Failed to load: {e}"
-            logging.warning(f"✗ Skipping {name}: {e}")
+            logging.warning(f"Skipping {name}: {e}")
 
-    h5_path = os.path.join(BASE_DIR, "parkinson_model.h5")
-    if os.path.isfile(h5_path) and "parkinson" not in MODELS:
+    # Load Parkinson PKL if present (outside MODEL_PATHS which only tracks .h5)
+    pk_path = os.path.join(BASE_DIR, "parkinson_model.pkl")
+    if os.path.isfile(pk_path) and "parkinson" not in MODELS:
         try:
-            with h5py.File(h5_path, 'r') as h5f:
-                scaler_mean = np.array(h5f['scaler']['mean'][:])
-                scaler_scale = np.array(h5f['scaler']['scale'][:])
-                
-                model_data = bytes(h5f['pickle_model']['data'][:])
-                model_obj = pickle.loads(model_data)
-                
-                MODELS["parkinson"] = {
-                    "type": "sklearn_ensemble",
-                    "model": model_obj['model'],
-                    "scaler": model_obj['scaler']
-                }
+            # Use joblib exclusively (file was saved with joblib)
+            pk_obj = joblib.load(pk_path)
+            if isinstance(pk_obj, dict) and 'model' in pk_obj and 'scaler' in pk_obj:
+                MODELS["parkinson"] = {"type": "sklearn", "model": pk_obj['model'], "scaler": pk_obj['scaler']}
                 MODELS["parkinsons"] = MODELS["parkinson"]
-                MODEL_PATHS["parkinson"] = h5_path
-                MODEL_PATHS["parkinsons"] = h5_path
-                logging.info(f"✓ Loaded Parkinson enhanced ensemble model from HDF5 ({h5_path})")
+                MODEL_PATHS["parkinson"] = pk_path
+                MODEL_PATHS["parkinsons"] = pk_path
+                logging.info("Loaded Parkinson PKL model with joblib")
+            else:
+                SKIPPED["parkinson"] = "PKL missing expected keys (model, scaler)"
         except Exception as e:
-            SKIPPED["parkinson"] = f"Failed to load H5 model: {e}"
-            logging.error(f"✗ Parkinson model load error: {e}")
+            SKIPPED["parkinson"] = f"Failed to load PKL with joblib: {e}"
+            logging.error(f"Parkinson model load error: {e}")
 
 
 def _get_target_size_and_channels(model) -> Tuple[Tuple[int, int], int, bool]:
@@ -207,36 +195,31 @@ def _extract_parkinson_features(gray: np.ndarray) -> np.ndarray:
 
 
 def _predict_parkinson(file_storage, model_info: Dict[str, Any]) -> Dict[str, Any]:
-    try:
-        # Read image as grayscale
-        raw = file_storage.read()
-        file_storage.stream.seek(0)
-        img = Image.open(io.BytesIO(raw)).convert("L").resize((128, 128))
-        gray = np.array(img)
-        X = _extract_parkinson_features(gray)
-        scaler = model_info.get("scaler")
-        clf = model_info.get("model")
-        if scaler is not None:
-            Xs = scaler.transform(X)
-        else:
-            Xs = X
-        prob1: float
-        if hasattr(clf, 'predict_proba'):
-            probs = clf.predict_proba(Xs)[0]
-            # For ensemble, get probability of positive class (Parkinson)
-            prob1 = float(probs[-1]) if len(probs) > 1 else float(probs[0])
-        else:
-            pred = clf.predict(Xs)[0]
-            # convert hard label to pseudo-probability
-            prob1 = 0.9 if int(pred) == 1 else 0.1
-        class_idx = 1 if prob1 >= 0.5 else 0
-        labels = CLASS_LABELS.get("parkinson", ["Healthy", "Parkinson's"])
-        class_name = labels[class_idx]
-        confidence = max(prob1, 1.0 - prob1)
-        return {"class": class_name, "confidence": float(confidence)}
-    except Exception as e:
-        logging.error(f"Parkinson prediction error: {e}")
-        return {"class": "Error", "confidence": 0.0}
+    # Read image as grayscale
+    raw = file_storage.read()
+    file_storage.stream.seek(0)
+    img = Image.open(io.BytesIO(raw)).convert("L").resize((128, 128))
+    gray = np.array(img)
+    X = _extract_parkinson_features(gray)
+    scaler = model_info.get("scaler")
+    clf = model_info.get("model")
+    if scaler is not None:
+        Xs = scaler.transform(X)
+    else:
+        Xs = X
+    prob1: float
+    if hasattr(clf, 'predict_proba'):
+        probs = clf.predict_proba(Xs)[0]
+        prob1 = float(probs[-1])  # assume last index is Parkinson class
+    else:
+        pred = clf.predict(Xs)[0]
+        # convert hard label to pseudo-probability
+        prob1 = 0.9 if int(pred) == 1 else 0.1
+    class_idx = 1 if prob1 >= 0.5 else 0
+    labels = CLASS_LABELS.get("parkinson", ["Healthy", "Parkinson"])
+    class_name = labels[class_idx]
+    confidence = max(prob1, 1.0 - prob1)
+    return {"class": class_name, "confidence": float(confidence)}
 
 
 def _predict_with_model(model, batch: np.ndarray, model_name: str, threshold: float | None = None) -> Dict[str, Any]:
@@ -285,27 +268,13 @@ def list_models():
     })
 
 
-@app.route("/models/reload", methods=["POST"])
-def reload_models():
-    """Manually reload all models - useful for debugging deployment"""
-    MODELS.clear()
-    SKIPPED.clear()
-    _load_models()
-    return jsonify({
-        "message": "Models reloaded",
-        "models_loaded": sorted(MODELS.keys()),
-        "skipped": SKIPPED
-    })
-
-
 @app.route("/predict/<model_name>", methods=["POST"])
 def predict(model_name: str):
     model_name = model_name.lower()
     if model_name not in MODEL_PATHS and model_name not in MODELS:
         return jsonify({
             "error": f"Model '{model_name}' not found.",
-            "available_in_paths": sorted(MODEL_PATHS.keys()),
-            "available_in_memory": sorted(MODELS.keys()),
+            "available": sorted(MODEL_PATHS.keys()),
         }), 404
 
     if "image" not in request.files:
@@ -314,16 +283,10 @@ def predict(model_name: str):
     file_storage = request.files["image"]
     model_info = MODELS.get(model_name)
     if model_info is None:
-        logging.info(f"Model {model_name} not in memory, attempting to load...")
         _load_models()
         model_info = MODELS.get(model_name)
         if model_info is None:
-            skip_reason = SKIPPED.get(model_name, "Unknown error")
-            return jsonify({
-                "error": f"Failed to load model '{model_name}'",
-                "reason": skip_reason,
-                "available": sorted(MODELS.keys())
-            }), 500
+            return jsonify({"error": f"Failed to load model '{model_name}'"}), 500
 
     thr_param = request.args.get("threshold", None)
     threshold = None
@@ -333,7 +296,7 @@ def predict(model_name: str):
         except ValueError:
             threshold = None
 
-    if model_info.get("type") in ("sklearn", "sklearn_ensemble"):
+    if model_info.get("type") == "sklearn":
         out = _predict_parkinson(file_storage, model_info)
         return jsonify({"model": model_name, "class": out["class"], "confidence": out["confidence"]})
 
@@ -362,32 +325,10 @@ def predict_parkinson():
 
 @app.route("/health", methods=["GET"])
 def health():
-    h5_path = os.path.join(BASE_DIR, "parkinson_model.h5")
-    pkl_path = os.path.join(BASE_DIR, "parkinson_model.pkl")
-    
-    debug_info = {
-        "status": "ok",
-        "models_loaded": sorted(MODELS.keys()),
-        "skipped": SKIPPED,
-        "base_dir": BASE_DIR,
-        "files_in_base_dir": os.listdir(BASE_DIR) if os.path.isdir(BASE_DIR) else [],
-        "parkinson_h5_exists": os.path.isfile(h5_path),
-        "parkinson_pkl_exists": os.path.isfile(pkl_path),
-        "h5_path": h5_path,
-        "model_paths": MODEL_PATHS
-    }
-    return jsonify(debug_info)
+    return jsonify({"status": "ok", "models_loaded": sorted(MODELS.keys()), "skipped": SKIPPED})
 
 
 _load_models()
-
-# Startup logging
-logging.info("="*60)
-logging.info("🚀 HealthAI Model API Starting Up")
-logging.info(f"📁 Base Directory: {BASE_DIR}")
-logging.info(f"📦 Models Loaded: {sorted(MODELS.keys())}")
-logging.info(f"⚠️  Skipped Models: {SKIPPED}")
-logging.info("="*60)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
