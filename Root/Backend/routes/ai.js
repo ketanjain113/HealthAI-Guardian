@@ -6,17 +6,18 @@ const router = express.Router();
 let genAI;
 let model;
 
-// Initialize Gemini
-if (process.env.GEMINI_API_KEY) {
-  try {
-    genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    model = genAI.getGenerativeModel({ model: "models/gemini-1.5-flash" });
-    console.log("✅ Gemini initialized successfully");
-  } catch (error) {
-    console.error("❌ Gemini initialization failed:", error.message);
+// Lazy initialize Gemini on first request
+function ensureModel() {
+  if (!model && process.env.GEMINI_API_KEY) {
+    try {
+      genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+      model = genAI.getGenerativeModel({ model: "models/gemini-1.5-flash" });
+      console.log("✅ Gemini initialized successfully");
+    } catch (error) {
+      console.error("❌ Gemini initialization failed:", error.message);
+    }
   }
-} else {
-  console.warn("⚠️ GEMINI_API_KEY not found in environment variables");
+  return model;
 }
 
 router.post("/symptom-check", async (req, res) => {
@@ -53,7 +54,8 @@ router.post("/symptom-check", async (req, res) => {
   }
 
   // ✅ Ensure Gemini ready
-  if (!model) {
+  const currentModel = ensureModel();
+  if (!currentModel) {
     return res.status(500).json({
       reply: "AI service is not configured. Please add GEMINI_API_KEY.",
     });
@@ -66,7 +68,7 @@ router.post("/symptom-check", async (req, res) => {
 
     console.log("🔵 Sending to Gemini:", rawInput.substring(0, 50));
     
-    const result = await model.generateContent({
+    const result = await currentModel.generateContent({
       contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
       generationConfig: {
         temperature: 0.7,
