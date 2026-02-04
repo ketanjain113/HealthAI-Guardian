@@ -10,13 +10,7 @@ let model;
 if (process.env.GEMINI_API_KEY) {
   try {
     genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-pro",
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 200,
-      },
-    });
+    model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
     console.log("✅ Gemini initialized successfully");
   } catch (error) {
     console.error("❌ Gemini initialization failed:", error.message);
@@ -72,7 +66,13 @@ router.post("/symptom-check", async (req, res) => {
 
     console.log("🔵 Sending to Gemini:", rawInput.substring(0, 50));
     
-    const result = await model.generateContent(fullPrompt);
+    const result = await model.generateContent({
+      contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 200,
+      },
+    });
     
     console.log("🟢 Gemini response received");
     
