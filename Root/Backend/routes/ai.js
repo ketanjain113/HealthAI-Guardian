@@ -3,100 +3,40 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const router = express.Router();
 
-let genAI;
-let model;
-
-// Lazy initialize Gemini on first request
-function ensureModel() {
-  if (!model && process.env.GEMINI_API_KEY) {
-    try {
-      genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-      model = genAI.getGenerativeModel({ model: "models/gemini-1.5-flash" });
-      console.log("✅ Gemini initialized successfully");
-    } catch (error) {
-      console.error("❌ Gemini initialization failed:", error.message);
-    }
-  }
-  return model;
-}
-
 router.post("/symptom-check", async (req, res) => {
   const { symptom, message, text } = req.body;
-  const rawInput =
-    (typeof symptom === "string" && symptom) ||
-    (typeof message === "string" && message) ||
-    (typeof text === "string" && text) ||
-    "";
+  const input = symptom || message || text || "";
 
-  if (!rawInput || typeof rawInput !== "string") {
+  if (!input.trim()) {
     return res.json({ reply: "Please type your message 😊" });
   }
 
-  // ✅ Clean input properly
-  const cleaned = rawInput
-    .trim()
-    .toLowerCase()
-    .replace(/[^\w\s]/g, ""); // removes emojis/punctuation
-
-  // ✅ SUPER STRONG GREETING BLOCK
-  if (/^(hi|hello|hey|hii+|hiii+|yo|sup|good\s(morning|afternoon|evening))\b/.test(cleaned)) {
-    return res.json({
-      reply: "Hello! I'm HealthAI Assistant 😊 How can I help you today?",
-    });
+  // Quick responses for greetings
+  const lower = input.trim().toLowerCase();
+  if (/^(hi|hello|hey)$/.test(lower)) {
+    return res.json({ reply: "Hello! I'm HealthAI Assistant 😊 How can I help you today?" });
+  }
+  if (/what (are|can) you/.test(lower)) {
+    return res.json({ reply: "I'm HealthAI Assistant. Tell me your symptoms and I'll help analyze them!" });
   }
 
-  // ✅ Identity block
-  if (/\b(who are you|what are you|what can you do|what do you do)\b/.test(cleaned)) {
-    return res.json({
-      reply:
-        "I'm HealthAI Assistant — I can help you understand symptoms, suggest possible causes, and give general health advice. Tell me what you're experiencing 😊",
-    });
-  }
-
-  // ✅ Ensure Gemini ready
-  const currentModel = ensureModel();
-  if (!currentModel) {
-    return res.status(500).json({
-      reply: "AI service is not configured. Please add GEMINI_API_KEY.",
-    });
+  if (!process.env.GEMINI_API_KEY) {
+    return res.status(500).json({ reply: "AI service not configured." });
   }
 
   try {
-    const systemPrompt = `You are HealthAI Assistant. When users describe health symptoms, analyze them and provide possible causes. For greetings or general questions, respond naturally.`;
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    
+    const prompt = `You are a health assistant. User says: "${input}". Provide a brief, helpful response (max 150 words).`;
+    
+    const result = await model.generateContent(prompt);
+    const reply = result.response.text().trim();
 
-    const fullPrompt = `${systemPrompt}\n\nUser: ${rawInput}\nAssistant:`;
-
-    console.log("🔵 Sending to Gemini:", rawInput.substring(0, 50));
-    
-    const result = await currentModel.generateContent({
-      contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 200,
-      },
-    });
-    
-    console.log("🟢 Gemini response received");
-    
-    const response = result.response;
-    const reply = response.text()?.trim() || "I couldn't process that. Please try again.";
-
-    console.log("✅ Reply:", reply.substring(0, 100));
-    
     return res.json({ reply });
   } catch (err) {
-    console.error("❌ Gemini Error Full Details:", {
-      message: err.message,
-      status: err.status,
-      statusText: err.statusText,
-      errorDetails: err.errorDetails,
-      stack: err.stack?.substring(0, 500)
-    });
-    
-    const errorMsg = err.message || "Unknown error";
-    return res.status(500).json({
-      reply: `AI service error: ${errorMsg}. Please check your API key.`,
-    });
+    console.error("Gemini Error:", err.message);
+    return res.status(500).json({ reply: "Sorry, I'm having trouble right now. Please try again." });
   }
 });
 
