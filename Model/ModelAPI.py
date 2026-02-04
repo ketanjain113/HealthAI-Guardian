@@ -195,31 +195,42 @@ def _extract_parkinson_features(gray: np.ndarray) -> np.ndarray:
 
 
 def _predict_parkinson(file_storage, model_info: Dict[str, Any]) -> Dict[str, Any]:
-    # Read image as grayscale
-    raw = file_storage.read()
-    file_storage.stream.seek(0)
-    img = Image.open(io.BytesIO(raw)).convert("L").resize((128, 128))
-    gray = np.array(img)
-    X = _extract_parkinson_features(gray)
-    scaler = model_info.get("scaler")
-    clf = model_info.get("model")
-    if scaler is not None:
-        Xs = scaler.transform(X)
-    else:
-        Xs = X
-    prob1: float
-    if hasattr(clf, 'predict_proba'):
-        probs = clf.predict_proba(Xs)[0]
-        prob1 = float(probs[-1])  # assume last index is Parkinson class
-    else:
-        pred = clf.predict(Xs)[0]
-        # convert hard label to pseudo-probability
-        prob1 = 0.9 if int(pred) == 1 else 0.1
-    class_idx = 1 if prob1 >= 0.5 else 0
-    labels = CLASS_LABELS.get("parkinson", ["Healthy", "Parkinson"])
-    class_name = labels[class_idx]
-    confidence = max(prob1, 1.0 - prob1)
-    return {"class": class_name, "confidence": float(confidence)}
+    try:
+        # Read image as grayscale
+        raw = file_storage.read()
+        file_storage.stream.seek(0)
+        img = Image.open(io.BytesIO(raw)).convert("L").resize((128, 128))
+        gray = np.array(img)
+        X = _extract_parkinson_features(gray)
+        scaler = model_info.get("scaler")
+        clf = model_info.get("model")
+        if scaler is not None:
+            Xs = scaler.transform(X)
+        else:
+            Xs = X
+        
+        prob1: float
+        try:
+            if hasattr(clf, 'predict_proba'):
+                probs = clf.predict_proba(Xs)[0]
+                prob1 = float(probs[-1])  # assume last index is Parkinson class
+            else:
+                pred = clf.predict(Xs)[0]
+                prob1 = 0.9 if int(pred) == 1 else 0.1
+        except AttributeError as e:
+            # sklearn version mismatch - fall back to predict only
+            logging.warning(f"predict_proba failed with AttributeError, using predict: {e}")
+            pred = clf.predict(Xs)[0]
+            prob1 = 0.85 if int(pred) == 1 else 0.15
+        
+        class_idx = 1 if prob1 >= 0.5 else 0
+        labels = CLASS_LABELS.get("parkinson", ["Healthy", "Parkinson"])
+        class_name = labels[class_idx]
+        confidence = max(prob1, 1.0 - prob1)
+        return {"class": class_name, "confidence": float(confidence)}
+    except Exception as e:
+        logging.error(f"Parkinson prediction failed: {e}")
+        raise
 
 
 def _predict_with_model(model, batch: np.ndarray, model_name: str, threshold: float | None = None) -> Dict[str, Any]:
