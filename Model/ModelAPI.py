@@ -279,13 +279,27 @@ def list_models():
     })
 
 
+@app.route("/models/reload", methods=["POST"])
+def reload_models():
+    """Manually reload all models - useful for debugging deployment"""
+    MODELS.clear()
+    SKIPPED.clear()
+    _load_models()
+    return jsonify({
+        "message": "Models reloaded",
+        "models_loaded": sorted(MODELS.keys()),
+        "skipped": SKIPPED
+    })
+
+
 @app.route("/predict/<model_name>", methods=["POST"])
 def predict(model_name: str):
     model_name = model_name.lower()
     if model_name not in MODEL_PATHS and model_name not in MODELS:
         return jsonify({
             "error": f"Model '{model_name}' not found.",
-            "available": sorted(MODEL_PATHS.keys()),
+            "available_in_paths": sorted(MODEL_PATHS.keys()),
+            "available_in_memory": sorted(MODELS.keys()),
         }), 404
 
     if "image" not in request.files:
@@ -294,10 +308,16 @@ def predict(model_name: str):
     file_storage = request.files["image"]
     model_info = MODELS.get(model_name)
     if model_info is None:
+        logging.info(f"Model {model_name} not in memory, attempting to load...")
         _load_models()
         model_info = MODELS.get(model_name)
         if model_info is None:
-            return jsonify({"error": f"Failed to load model '{model_name}'"}), 500
+            skip_reason = SKIPPED.get(model_name, "Unknown error")
+            return jsonify({
+                "error": f"Failed to load model '{model_name}'",
+                "reason": skip_reason,
+                "available": sorted(MODELS.keys())
+            }), 500
 
     thr_param = request.args.get("threshold", None)
     threshold = None
@@ -336,10 +356,32 @@ def predict_parkinson():
 
 @app.route("/health", methods=["GET"])
 def health():
-    return jsonify({"status": "ok", "models_loaded": sorted(MODELS.keys()), "skipped": SKIPPED})
+    h5_path = os.path.join(BASE_DIR, "parkinson_model.h5")
+    pkl_path = os.path.join(BASE_DIR, "parkinson_model.pkl")
+    
+    debug_info = {
+        "status": "ok",
+        "models_loaded": sorted(MODELS.keys()),
+        "skipped": SKIPPED,
+        "base_dir": BASE_DIR,
+        "files_in_base_dir": os.listdir(BASE_DIR) if os.path.isdir(BASE_DIR) else [],
+        "parkinson_h5_exists": os.path.isfile(h5_path),
+        "parkinson_pkl_exists": os.path.isfile(pkl_path),
+        "h5_path": h5_path,
+        "model_paths": MODEL_PATHS
+    }
+    return jsonify(debug_info)
 
 
 _load_models()
+
+# Startup logging
+logging.info("="*60)
+logging.info("🚀 HealthAI Model API Starting Up")
+logging.info(f"📁 Base Directory: {BASE_DIR}")
+logging.info(f"📦 Models Loaded: {sorted(MODELS.keys())}")
+logging.info(f"⚠️  Skipped Models: {SKIPPED}")
+logging.info("="*60)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
